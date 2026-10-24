@@ -157,3 +157,45 @@ if (mobileToggle && navLinks) {
         });
     });
 }
+/* ==========================================================================
+   CONTACT FORM SUBMISSION (Connect to n8n Webhook)
+   ========================================================================== */
+const contactForm = document.getElementById('contactForm'); // Apne form ki ID yahan check kar Lein
+
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Page refresh hone se rokay ga
+
+        // Form se data collect karna
+        const formData = {
+            name: document.getElementById('name').value,       // Input fields ki IDs match honi chahiye
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            message: document.getElementById('message').value,
+            submittedAt: new Date().toISOString()
+        };
+
+        try {
+            // Ngrok public URL jo abhi aapne generate kiya hai
+            const webhookUrl = 'https://dodge-civil-ignore.ngrok-free.dev/webhook-test/valid-checking';
+
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                alert('Message sent successfully!');
+                contactForm.reset(); // Form clear kar dega
+            } else {
+                alert('Failed to send message. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to connect to the server. Make sure n8n and ngrok are running.');
+        }
+    });
+}
